@@ -1,0 +1,1 @@
+Customer 1001 — Jane Doe. Policy: Auto Basic. Balance due: $0.00. Status: active.

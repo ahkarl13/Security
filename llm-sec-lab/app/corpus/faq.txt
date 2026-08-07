@@ -1,0 +1,6 @@
+Acme Insurance — FAQ
+
+Q: How do I file a claim? A: Log in and select "New Claim," or call support.
+Q: When is my payment due? A: On your policy anniversary each month.
+Q: Can I change coverage? A: Yes, mid-term changes are prorated.
+Q: How are quotes calculated? A: By coverage type, location, and claim history.

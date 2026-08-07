@@ -1,0 +1,7 @@
+Acme Insurance — Coverage Overview
+
+Auto Basic covers liability up to state minimums. Auto Plus adds collision and
+comprehensive. Home Standard covers dwelling and personal property. Renters
+covers personal property and liability. Deductibles range from $250 to $1,000.
+Quotes depend on coverage type, location, and history. Ask the assistant for a
+sample quote for any coverage type.

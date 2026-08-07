@@ -1,0 +1,19 @@
+# Vulnerable LLM app target for the security lab.
+# Runs the app in a container; points at your existing Ollama on the host.
+#
+#   Pop box:  Ollama is already on 0.0.0.0:11434, so use host.docker.internal
+#   Bring up:  docker compose up --build
+#   Target:    http://localhost:8888/chat
+#
+services:
+  target:
+    build: ./app
+    ports:
+      - "8888:8888"
+    environment:
+      # Ollama OpenAI-compatible endpoint on the host.
+      OPENAI_BASE_URL: "http://host.docker.internal:11434/v1"
+      OPENAI_API_KEY: "ollama"
+      MODEL: "llama3.1:8b"      # swap to qwen3.6:27b etc.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

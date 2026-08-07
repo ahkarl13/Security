@@ -1,0 +1,11 @@
+# Python envs / caches
+.venv/
+.venv-garak/
+__pycache__/
+*.pyc
+
+# Tool caches / noisy logs
+.promptfoo/
+node_modules/
+attacks/garak-run.txt
+**/.local/
