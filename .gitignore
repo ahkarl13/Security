@@ -8,4 +8,5 @@ __pycache__/
 .promptfoo/
 node_modules/
 attacks/garak-run.txt
+**/exfil.log
 **/.local/
