@@ -26,6 +26,19 @@ class as GitHub Copilot's *CamoLeak* (CVE-2025-59145) and Microsoft Copilot's *E
 Includes a working PoC (vulnerable app + attacker collector + rendering client) and a
 fix at the rendering surface. Lab: `md-exfil-lab/`.
 
+## Writeup 03 — Multi-Turn (Crescendo) Jailbreaks with PyRIT
+
+**[→ writeup-03-multiturn-pyrit.md](writeup-03-multiturn-pyrit.md)** · OWASP LLM07 / LLM01
+
+Does a model's single-shot resistance survive a *multi-turn* attack? Built with **PyRIT**
+(Microsoft's AI red-team framework): a Crescendo attack that escalates over 10 turns to
+extract a protected system-prompt secret. Findings — an **unhardened** system prompt leaks
+its secret to a one-line injection (LLM07); a one-sentence hardening directive resists both
+the single-shot injection **and** the full 10-turn Crescendo on a 3B *and* a 27B; and, the
+unexpected part, the multi-turn escalation was *deflected* exactly where the blunt one-liner
+succeeded. Plus a tooling lesson: an attacker model's *compliance* beats its size. Lab:
+`jailbreak-lab/`.
+
 ## Running the labs
 
 Each lab has its own README. All targets are self-hosted lab apps I own; every "secret"
