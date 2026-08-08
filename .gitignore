@@ -10,3 +10,10 @@ node_modules/
 attacks/garak-run.txt
 **/exfil.log
 **/.local/
+
+# raw Tee run-logs (progress spam; clean findings are in *-results.txt)
+**/technique-breadth-*.txt
+**/unicode-injection.txt
+**/tool-result-injection.txt
+# scratch helpers
+_git*.ps1
