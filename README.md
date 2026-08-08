@@ -87,6 +87,20 @@ at greedy and leakage *falls* with temperature, so temperature's effect on safet
 and the attacker just picks the temperature that helps them. A single-shot "it refused" hides the
 curve. Lab: `sampling-curve/`.
 
+## Writeup 08 — Jailbreak Transfer Is the Exception, Not the Rule: A Cross-Model Attack Matrix
+
+**[→ writeup-08-cross-model-transfer.md](writeup-08-cross-model-transfer.md)** · OWASP LLM07 · attack transferability
+
+Eight jailbreak **templates** × five targets carrying the *identical* guard (only the base
+model / size / quant varies). Almost no cell is universal: the broadest attack breaks **3 of 4**
+guarded models but bounces off the aligned 27B (a **transfer sink, 0/8**), and each model has its
+own weakness profile — the 3B falls *only* to skeleton-key framing (83%). Robustness turns out to
+have **two dissociable axes**: the "safe" Q4 quant is cracked by *more* attack types (5/8) but only
+*shallowly* (8–42%, needs best-of-N), while the "danger-zone" Q3 is cracked by fewer but leaks
+*completely* (92–100%). You can't certify a guard against "prompt injection" as a class — the same
+guard blocks an attack on one build and surrenders on another; only **output-side filtering**
+transfers. Lab: `cross-model-transfer/`.
+
 ## Running the labs
 
 Each lab has its own README. All targets are self-hosted lab apps I own; every "secret"
