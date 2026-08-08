@@ -17,3 +17,11 @@ attacks/garak-run.txt
 **/tool-result-injection.txt
 # scratch helpers
 _git*.ps1
+
+# test #1/#2 raw run-logs (clean findings are in *-results.txt)
+**/curve-run*.txt
+**/pull*.txt
+quant-safety/quant-safety.txt
+quant-safety/quant-safety-run2.txt
+guardrail-eval/detector-eval.txt
+guardrail-eval/llama-guard-eval.txt
