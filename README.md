@@ -74,6 +74,19 @@ classifier) caught only **53%**, missing prompt-leak, base64, hypotheticals, and
 because none are *harm* categories. The subtle part: a detector inherits the **same decode blind
 spots** as the model it protects. Lab: `guardrail-eval/`.
 
+## Writeup 07 — Temperature Is an Attack Surface: Best-of-N Turns a "10% Leak" Into a Certainty
+
+**[→ writeup-07-sampling-curve.md](writeup-07-sampling-curve.md)** · OWASP LLM07 · sampling-parameter risk
+
+A response is a *draw from a distribution*, and the two knobs that shape it — sampling
+**temperature** and **number of samples** — are chosen by the attacker. On a hardened 8B at the
+standard deploy quant, a prompt that leaks **0%** at greedy decoding climbs to **53%** at
+temperature 1.2, and best-of-N compounds it — even a **7%** per-sample leak hits **99% by N=64**.
+The twist: on the "danger-zone" quant (writeup 05) the same prompt leaks **100% deterministically**
+at greedy and leakage *falls* with temperature, so temperature's effect on safety **flips sign** —
+and the attacker just picks the temperature that helps them. A single-shot "it refused" hides the
+curve. Lab: `sampling-curve/`.
+
 ## Running the labs
 
 Each lab has its own README. All targets are self-hosted lab apps I own; every "secret"
