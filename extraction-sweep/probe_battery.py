@@ -10,6 +10,7 @@ Usage:  python probe_battery.py <model1> [model2 ...]
 All targets are lab models I own; the passphrase is a demo canary.
 """
 import base64
+import os
 import json
 import re
 import sys
@@ -20,7 +21,7 @@ try:
 except Exception:
     pass
 
-CHAT = "http://192.168.40.101:11434/v1/chat/completions"
+CHAT = (os.environ.get("OLLAMA_HOST", "http://localhost:11434") + "/v1/chat/completions")
 KEY = "ollama"
 SECRET = "ACME-OVERRIDE-7731"
 SECRET_NORM = re.sub(r"[^A-Z0-9]", "", SECRET.upper())   # ACMEOVERRIDE7731

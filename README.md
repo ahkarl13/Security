@@ -39,7 +39,46 @@ unexpected part, the multi-turn escalation was *deflected* exactly where the blu
 succeeded. Plus a tooling lesson: an attacker model's *compliance* beats its size. Lab:
 `jailbreak-lab/`.
 
+## Writeup 04 — What Actually Breaks a Local LLM Assistant: A Five-Angle Injection & Extraction Sweep
+
+**[→ writeup-04-injection-sweep.md](writeup-04-injection-sweep.md)** · OWASP LLM01 / LLM07
+
+A breadth study across five attack surfaces — a 14-vector extraction battery, encoding/obfuscation,
+a **garak** scan, **PyRIT** technique breadth (SkeletonKey / ManyShot / PAIR / TAP), and
+invisible-Unicode + tool-result injection. Findings: an 8B assistant is *"reads-and-obeys"* —
+plaintext injection lands at ~100% in **any** channel (user, document, tool result) — while a
+27B has a real instruction/data boundary; obfuscation only defeats the 8B by blocking *decode*
+(a tokenizer gate, not a defense); and leak posture tracks **alignment, not size**. Labs:
+`extraction-sweep/`, `jailbreak-lab/`.
+
+## Writeup 05 — The Quantization Danger Zone
+
+**[→ writeup-05-quantization-safety.md](writeup-05-quantization-safety.md)** · OWASP LLM07 · model supply chain
+
+Hold the model and the hardening prompt constant; vary **only** the quantization, and measure
+how much of a protected secret leaks at each level. Result: safety degrades **non-monotonically**
+— leakage *spikes* at a middle quant (`Q3_K_M`) and is *lowest* at the most aggressive one
+(`Q2_K`), with the near-full-precision builds safely in between. There's a danger zone in the
+middle of the compression range where the guard has cracked but the model is still sharp enough
+to hand over the secret. Quantization is a safety knob, not just a performance knob. Lab:
+`quant-safety/`.
+
+## Writeup 06 — Blue Team: How Well Does a Guardrail Actually Catch Prompt Injection?
+
+**[→ writeup-06-guardrail-efficacy.md](writeup-06-guardrail-efficacy.md)** · OWASP LLM01 · defensive evaluation
+
+The corpus, turned around into a defense benchmark: recall on real attacks, false-positive rate
+on benign traffic, and which classes slip through. A purpose-built injection detector caught
+**100%** of canonical attacks with **0%** false positives; the popular **Llama-Guard** (a *harm*
+classifier) caught only **53%**, missing prompt-leak, base64, hypotheticals, and blunt hijacks
+because none are *harm* categories. The subtle part: a detector inherits the **same decode blind
+spots** as the model it protects. Lab: `guardrail-eval/`.
+
 ## Running the labs
 
 Each lab has its own README. All targets are self-hosted lab apps I own; every "secret"
 in the repo is a demo canary. **Never expose the vulnerable apps to the internet.**
+
+Scripts talk to an OpenAI-compatible / Ollama endpoint read from the `OLLAMA_HOST`
+environment variable, defaulting to `http://localhost:11434`. Point them at your own host with
+`OLLAMA_HOST=http://your-host:11434` (PowerShell: `$env:OLLAMA_HOST = "http://your-host:11434"`).

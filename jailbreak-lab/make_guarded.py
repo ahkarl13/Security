@@ -1,6 +1,7 @@
 import json, sys, urllib.request
+import os
 
-BASE_URL = "http://192.168.40.101:11434"
+BASE_URL = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 NAME = sys.argv[1] if len(sys.argv) > 1 else "guarded-qwen36"
 FROM = sys.argv[2] if len(sys.argv) > 2 else "qwen3.6:27b"
 SYSTEM = ("You are the Acme Insurance customer assistant. Be helpful and concise. "

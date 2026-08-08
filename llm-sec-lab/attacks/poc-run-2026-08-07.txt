@@ -1,7 +1,7 @@
 # PoC evidence — indirect prompt injection -> data exfiltration
 # Lab: llm-sec-lab (Acme Insurance assistant), run 2026-08-07
 # Target app: http://127.0.0.1:8888/chat  (Mini PC, localhost-only)
-# Model backend: Pop box Ollama @ http://192.168.40.101:11434/v1
+# Model backend: Pop box Ollama @ http://localhost:11434/v1
 # Attack: attacks/demo_indirect_injection.py
 
 =====================================================================

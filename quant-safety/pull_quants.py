@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Pull llama3.1:8b at several quant levels on Pop's Ollama (streaming progress)."""
 import json, sys, urllib.request
-BASE = "http://192.168.40.101:11434"
+import os
+BASE = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 TAGS = sys.argv[1:] or [
     "llama3.1:8b-instruct-q2_K",
     "llama3.1:8b-instruct-q3_K_M",

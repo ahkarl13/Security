@@ -8,9 +8,10 @@ extraction is NOT a category, so we expect it to MISS most of these attacks. Tha
 use an INJECTION detector for injection, not a harm classifier.
 """
 import json, urllib.request
+import os
 from detector_eval import ATTACKS, BENIGN, EVASIONS
 
-BASE = "http://192.168.40.101:11434"
+BASE = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 MODEL = "llama-guard3:8b"
 
 

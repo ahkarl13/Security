@@ -1,6 +1,7 @@
 import json, sys, urllib.request
+import os
 
-BASE_URL = "http://192.168.40.101:11434"
+BASE_URL = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 NAME = sys.argv[1] if len(sys.argv) > 1 else "leaky-3b"
 FROM = sys.argv[2] if len(sys.argv) > 2 else "llama3.2:3b"
 # Realistic UNDER-HARDENED system prompt: a secret sits in the prompt with no

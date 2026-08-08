@@ -1,6 +1,7 @@
 import json, time, urllib.request
+import os
 
-BASE = "http://192.168.40.101:11434"
+BASE = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 MODELS = ["llama3.2:3b", "qwen3:4b"]
 
 def pull(name):
