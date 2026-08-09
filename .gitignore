@@ -25,3 +25,18 @@ quant-safety/quant-safety.txt
 quant-safety/quant-safety-run2.txt
 guardrail-eval/detector-eval.txt
 guardrail-eval/llama-guard-eval.txt
+
+# training lane — datasets, model runs, embeddings, scratch logs
+training/data/
+training/runs/
+training/**/*.npz
+training/**/*.log
+# homelab infra plumbing (private IP + SSH key paths) — never publish
+training/popsh.py
+training/poprun.py
+training/popput.py
+jailbreak-lab/run_mt.ps1
+jailbreak-lab/run_mt_sweep.ps1
+jailbreak-lab/mt-sweep-run.txt
+# raw Tee run-log for the language sweep (clean findings are in lang-results.txt)
+lang-jailbreak/lang-run.txt
