@@ -1,0 +1,12 @@
+{
+  "temperature": 4.7929,
+  "val_nll_before": 1.3294,
+  "val_nll_after": 0.5276,
+  "test_ece_before": 0.1667,
+  "test_ece_after": 0.0566,
+  "abstain_band": [
+    0.4,
+    0.6
+  ],
+  "note": "hybrid_judge: matcher authoritative; this T + band govern the neural layer only"
+}

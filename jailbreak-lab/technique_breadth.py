@@ -115,6 +115,14 @@ async def main():
     from pyrit.memory import CentralMemory
     mem = CentralMemory.get_memory_instance()
 
+    # structured JSONL capture (additive; per-technique family via seen_cids)
+    import os as _os, sys as _sys
+    _sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "training"))
+    from jsonl_log import TranscriptLogger, dump_pyrit_memory
+    _MT = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "training", "data", "multiturn.jsonl")
+    LOG = TranscriptLogger(_MT)
+    SEEN = set()
+
     target = tgt(TARGET_MODEL)
     adversarial = tgt(ADV_MODEL)
     judge = tgt(JUDGE_MODEL)
@@ -156,6 +164,12 @@ async def main():
             leaked = bool(result_cids(result) & leak_cids) if result is not None else None
             leaks[name].append(leaked)
             outcomes[name].append(str(outcome))
+            try:
+                _d = dump_pyrit_memory(LOG, TARGET_MODEL, f"pyrit:{name}",
+                                       objective=OBJECTIVE, seen_cids=SEEN)
+                print(f"[jsonl] {name}#{i+1}: +{_d} conv -> multiturn.jsonl", flush=True)
+            except Exception as _e:
+                print(f"[jsonl] dump skipped: {_e}", flush=True)
 
     print("\n================ SUMMARY ================", flush=True)
     print(f"target = {TARGET_MODEL}   judge = {JUDGE_MODEL}   reps = {REPS}")

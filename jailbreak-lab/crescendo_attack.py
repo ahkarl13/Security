@@ -69,6 +69,17 @@ async def main():
 
     result = await attack.execute_async(objective=OBJECTIVE)
 
+    # structured JSONL capture (additive)
+    try:
+        import os as _os, sys as _sys
+        _sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "training"))
+        from jsonl_log import TranscriptLogger, dump_pyrit_memory
+        _MT = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "training", "data", "multiturn.jsonl")
+        _n = dump_pyrit_memory(TranscriptLogger(_MT), TARGET_MODEL, "pyrit:crescendo", objective=OBJECTIVE)
+        print(f"[jsonl] dumped {_n} conversations -> training/data/multiturn.jsonl", flush=True)
+    except Exception as _e:
+        print(f"[jsonl] dump skipped: {_e}", flush=True)
+
     print("\n=== RESULT ===", flush=True)
     print("result attrs:", [a for a in dir(result) if not a.startswith("_")])
     print("outcome:", getattr(result, "outcome", None))
