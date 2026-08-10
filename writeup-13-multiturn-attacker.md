@@ -14,11 +14,11 @@ by our own trained model instead of a frontier API.
 - **Multi-turn adds a real but modest lift** on already-weak 8B guards (+0.05 on q4,
   +0.10 on q6): most successful cracks land on **turn 1**, a few arrive by turn 2–5
   when the attacker adapts to a partial refusal.
-- **The aligned 27B (`guarded-qwen36`) is the hard-target probe** — the model that
-  held 0% across every prior single- and multi-turn technique. That run is slow
-  (thinking model, minutes/turn) and is being measured separately; result appended
-  when complete. Everything below is final.
-- JSON-contract adherence holds across the loop (0.98–1.00).
+- **The aligned 27B (`guarded-qwen36`) held 0/15** — 0.0 ASR even against the
+  purpose-trained adaptive attacker over 5 turns (no timeouts, JSON adherence 0.97).
+  Alignment beats a trained, adapting multi-turn attacker, just as it beat every
+  prior single- and multi-turn technique in writeups #3–#8.
+- JSON-contract adherence holds across the loop (0.97–1.00).
 
 ## Setup
 `training/multiturn_attack.py`. Each conversation starts from an empty history; the
@@ -37,7 +37,9 @@ the LoRA.
 | guarded-8b-q4 | stock | 0.00 | 0.00 | 0.00 | — |
 | guarded-8b-q6 | **trained** | **0.60** | 0.50 | +0.10 | 1 |
 | guarded-8b-q6 | stock | 0.00 | 0.00 | 0.00 | — |
-| guarded-qwen36 (27B) | trained | _hard-target probe running — appended when complete_ | | | |
+| guarded-qwen36 (27B) | trained | **0.00** (0/15) | 0.00 | 0.00 | — |
+
+_(27B run: n=15, 4-bit attacker so it co-resides with the 27B target; still 0.)_
 
 ## Reading the numbers
 - **Stock = 0 everywhere.** An abliterated base *without* the SFT adapter never
@@ -50,8 +52,13 @@ the LoRA.
   fresh attack" vs "continue an existing thread").
 - **Why the multi-turn lift is small on 8B guards.** They already crack on turn 1 for
   a large fraction of openers, so there's little headroom for adaptation to add. The
-  regime where multi-turn *should* matter most is a hard target that refuses turn 1 —
-  which is exactly why the 27B run below is the interesting one.
+  regime where multi-turn *should* matter most is a hard target that refuses turn 1.
+- **The hard target refuses anyway.** The aligned 27B is exactly that regime — it
+  never leaks on turn 1, giving adaptation four more turns to work — and it *still*
+  held 0/15. A trained, adapting attacker with per-turn feedback did not find a crack
+  the way it trivially did on the 8B guards. This is the strongest form of the
+  project's through-line: alignment is the defense that generalizes, not size, not
+  quantization, and not (now) resistance-to-a-purpose-built-attacker.
 
 ## Takeaways
 1. A ~8B model, abliterated + SFT'd on your own red-team logs, is a competent
@@ -61,6 +68,9 @@ the LoRA.
    adaptation, and it depends entirely on how hard the target is.
 3. The frozen matcher makes per-turn success a check, not a judge call — so a
    multi-turn ASR here is trustworthy turn by turn.
+4. **Alignment held.** The one genuinely aligned target in the lab resisted the
+   trained adaptive attacker completely (0/15). The 8B "guards" are a system-prompt
+   veneer; the 27B has a real boundary — the attacker measures the difference cleanly.
 
 ## Repro
 ```
