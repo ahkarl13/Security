@@ -61,16 +61,34 @@ def run(val, test, outdir, abstain):
     T_raw = fit_temperature(val["logits"], val["labels"])
     # small/separated val sets give degenerate T (->0); bound it and flag reliability
     nll_before = nll(val["logits"], val["labels"], 1.0)
-    reliable = len(val["labels"]) >= 50 and nll_before > 0.05
-    T = round(min(5.0, max(0.5, T_raw)), 4) if reliable else 1.0
+    T_cand = round(min(5.0, max(0.5, T_raw)), 4)
+    # Decide adoption on VAL only (never peek at test): temperature scaling is
+    # adopted only if it (a) has enough val data and (b) actually improves val
+    # calibration (ECE). A head that is already well-separated / well-calibrated
+    # keeps T=1 -- forcing a val-NLL-optimal T can worsen held-out ECE.
+    val_ece_before = ece(val["logits"], val["labels"], 1.0)
+    val_ece_after = ece(val["logits"], val["labels"], T_cand)
+    enough = len(val["labels"]) >= 50 and nll_before > 0.05
+    helps = val_ece_after < val_ece_before - 1e-4
+    reliable = bool(enough and helps)
+    T = T_cand if reliable else 1.0
+    if not enough:
+        note = "val too small/separated -> keep T=1, rely on abstention band + matcher"
+    elif not helps:
+        note = ("head already well-calibrated (T-scaling does not improve val ECE) "
+                "-> keep T=1, rely on abstention band + matcher")
+    else:
+        note = "ok"
     rep = {
         "temperature": T,
         "temperature_raw": round(T_raw, 4),
+        "temperature_candidate": T_cand,
         "calibration_reliable": reliable,
-        "calibration_note": ("ok" if reliable else
-                             "val too small/separated -> keep T=1, rely on abstention band + matcher"),
+        "calibration_note": note,
         "val_nll_before": round(nll(val["logits"], val["labels"], 1.0), 4),
         "val_nll_after": round(nll(val["logits"], val["labels"], T), 4),
+        "val_ece_before": round(val_ece_before, 4),
+        "val_ece_after_candidateT": round(val_ece_after, 4),
         "test_ece_before": round(ece(test["logits"], test["labels"], 1.0), 4),
         "test_ece_after": round(ece(test["logits"], test["labels"], T), 4),
         "abstain_band": list(abstain),

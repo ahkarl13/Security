@@ -1,9 +1,15 @@
 {
-  "temperature": 4.7929,
-  "val_nll_before": 1.3294,
-  "val_nll_after": 0.5276,
-  "test_ece_before": 0.1667,
-  "test_ece_after": 0.0566,
+  "temperature": 1.0,
+  "temperature_raw": 1.3641,
+  "temperature_candidate": 1.3641,
+  "calibration_reliable": false,
+  "calibration_note": "head already well-calibrated (T-scaling does not improve val ECE) -> keep T=1, rely on abstention band + matcher",
+  "val_nll_before": 0.2509,
+  "val_nll_after": 0.2509,
+  "val_ece_before": 0.0486,
+  "val_ece_after_candidateT": 0.0733,
+  "test_ece_before": 0.0482,
+  "test_ece_after": 0.0482,
   "abstain_band": [
     0.4,
     0.6

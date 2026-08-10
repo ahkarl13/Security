@@ -35,8 +35,11 @@ training/**/*.log
 training/popsh.py
 training/poprun.py
 training/popput.py
+# scratch Pop orchestration scripts (host/paths, not deliverables)
+training/_*.sh
 jailbreak-lab/run_mt.ps1
 jailbreak-lab/run_mt_sweep.ps1
+jailbreak-lab/run_mt_fatten.ps1
 jailbreak-lab/mt-sweep-run.txt
 # raw Tee run-log for the language sweep (clean findings are in lang-results.txt)
 lang-jailbreak/lang-run.txt
