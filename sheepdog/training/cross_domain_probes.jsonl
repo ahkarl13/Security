@@ -1,0 +1,20 @@
+{"q": "A user changes the account id in a URL and views another customer's invoice. What vulnerability class is this and the fix?", "gold": ["IDOR", "broken access control", "CWE-639", "ownership", "authorization"]}
+{"q": "Untrusted input is concatenated into a database query. Name the vulnerability and the correct fix.", "gold": ["SQL injection", "SQLi", "CWE-89", "parameterized", "prepared statement"]}
+{"q": "What does the OWASP Top 10 2025 rank as A01?", "gold": ["broken access control"]}
+{"q": "In a red team engagement, what distinguishes it from a standard penetration test?", "gold": ["detection", "objective", "stealth", "respond", "caught", "blue team"]}
+{"q": "Which MITRE framework covers adversarial attacks against AI and machine-learning systems?", "gold": ["ATLAS"]}
+{"q": "What are the four functions of the NIST AI Risk Management Framework?", "gold": ["govern", "map", "measure", "manage"]}
+{"q": "Name the MITRE ATT&CK tactic for moving from one host to another inside a network.", "gold": ["lateral movement"]}
+{"q": "A server fetches a URL supplied by the user, reaching internal services and cloud metadata. What is this and the fix?", "gold": ["SSRF", "server-side request forgery", "CWE-918", "allow-list", "block internal", "metadata"]}
+{"q": "What OWASP testing standard provides the web application test-case catalog?", "gold": ["WSTG", "web security testing guide"]}
+{"q": "What is the difference between black-box and white-box penetration testing?", "gold": ["no prior knowledge", "no knowledge", "source", "full knowledge", "diagrams"]}
+{"q": "Untrusted serialized data is deserialized into objects enabling code execution. Name the weakness and fix.", "gold": ["deserialization", "CWE-502", "insecure deserialization", "data-only", "signed"]}
+{"q": "Which function was newly added in NIST CSF 2.0?", "gold": ["govern"]}
+{"q": "What phase of a penetration test covers rules of engagement, scope, and written authorization?", "gold": ["pre-engagement", "scoping", "pre engagement", "rules of engagement"]}
+{"q": "A page renders user input into HTML without encoding it. What is the vulnerability and the fix?", "gold": ["XSS", "cross-site scripting", "CWE-79", "output encoding", "CSP", "escap"]}
+{"q": "Which MITRE ATLAS technique corresponds to prompt injection?", "gold": ["AML.T0051", "T0051"]}
+{"q": "Which NIST publication is the Secure Software Development Framework?", "gold": ["SSDF", "800-218"]}
+{"q": "What penetration-testing surface involves Kerberos attacks and ACL/trust analysis?", "gold": ["active directory", "identity", " AD "]}
+{"q": "How do you validate that an automated scanner finding is a real, exploitable vulnerability?", "gold": ["exploit", "proof", "proof-of-exploit", "false positive", "reproduce"]}
+{"q": "What is the purpose of purple teaming?", "gold": ["detection", "collabor", "blue", "tune", "iterativ"]}
+{"q": "A file-upload endpoint accepts any file type and stores it in the web root. What is the risk and the fix?", "gold": ["unrestricted", "upload", "CWE-434", "web root", "validate", "no-execute"]}
