@@ -6,12 +6,14 @@ Pipeline: source code -> (optional) static analysis (Semgrep) -> RAG retrieval o
 206-item KB -> a grounded security review from the reasoning model. Each finding gets a
 location, vulnerability class (CWE/OWASP), severity, explanation, and concrete fix.
 
-Per writeup #18, knowledge matters most for review, so this uses a capable model + RAG
-(default qwen3.6:27b via Ollama); the SFT'd Sheepdog behavior model can be swapped in once
-served. Runs anywhere with OLLAMA_HOST + the RAG index.
+Per writeup #18, knowledge matters most for review, so this pairs a model + RAG. Default is
+now the served Sheepdog analyst (`sheepdog:8b` = Foundation-Sec-8B + SFT-v2/DPO-v2, GGUF q8_0
+via Ollama) - the whole build exists to run on Sheepdog. For heavy multi-vuln code review the
+larger `qwen3.6:27b` is sharper (writeup #18); pass `--model qwen3.6:27b` when depth matters.
+Runs anywhere with OLLAMA_HOST + the RAG index.
 
   OLLAMA_HOST=http://localhost:11434 python review.py --file samples/vuln_example.py \
-      --index ..\\rag --model qwen3.6:27b
+      --index ..\\rag --model sheepdog:8b
 """
 import argparse
 import json
@@ -93,7 +95,7 @@ def main():
     ap.add_argument("--file", default=None)
     ap.add_argument("--code", default=None)
     ap.add_argument("--index", default="../rag")
-    ap.add_argument("--model", default="qwen3.6:27b")
+    ap.add_argument("--model", default="sheepdog:8b")
     ap.add_argument("-k", type=int, default=6)
     a = ap.parse_args()
 

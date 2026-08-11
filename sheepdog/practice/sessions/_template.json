@@ -1,0 +1,19 @@
+{
+  "id": "portswigger::web-llm::<slug>",
+  "platform": "PortSwigger Web Security Academy",
+  "lab": "<exact lab title>",
+  "technique": "<short technique name>",
+  "attack_family": "<optional family tag>",
+  "category": "LLM0X",
+  "category_title": "<OWASP LLM category title>",
+  "owasp_2026": null,
+  "multi_turn": false,
+  "root_cause": "<why the target was vulnerable>",
+  "fix_pattern": "<the concrete defensive fix>",
+  "detection_hint": "<what to look for to spot this>",
+  "interaction": {
+    "user": "USER: <your input / attack>\nASSISTANT: <the model/app response>",
+    "outcome": "SUCCEEDED - <what was achieved> | FAILED - <why>"
+  },
+  "notes": "your steps, the ground-truth solution, and where you and Sheepdog disagreed"
+}

@@ -1,0 +1,33 @@
+{
+  "engagement": "Sheepdog Practice Range - platform-sanctioned training targets ONLY",
+  "authorized_by": "Target platforms' own terms (PortSwigger Web Security Academy) + AK self-hosted labs",
+  "authorization_ref": "PortSwigger permits attacking web-security-academy.net labs; self-hosted labs are AHK-owned",
+  "authorized_on": "2026-08-11",
+  "expires_on": "2027-08-11",
+  "i_am_authorized": true,
+  "in_scope": [
+    "*.web-security-academy.net",
+    "10.0.0.0/24",
+    "localhost",
+    "127.0.0.1",
+    "http://localhost:3000",
+    "http://localhost:8080"
+  ],
+  "out_of_scope": [
+    "*.gov",
+    "*.mil",
+    "portswigger.net",
+    "any host that is not a PortSwigger lab instance or a self-hosted AHK lab",
+    "any HTB/TryHackMe host unless connected over that platform's VPN and added here explicitly"
+  ],
+  "rules_of_engagement": {
+    "allow_destructive": false,
+    "allow_dos": false,
+    "allow_production": false,
+    "allowed_hours": "any (sanctioned training targets)",
+    "do_not_touch": ["the PortSwigger marketing site portswigger.net", "any non-lab domain"],
+    "evidence": "the lab's own solved-state banner + request/response notes; no third-party data",
+    "cleanup_required": false
+  },
+  "notes": "HARD RULE: the offensive hat only ever targets platform-sanctioned labs (PortSwigger's own lab instances over web-security-academy.net; self-hosted Juice Shop/WebGoat/DVWA on the homelab; HTB/THM hosts you're connected to over their VPN, added explicitly). Each PortSwigger lab spins up a fresh per-user *.web-security-academy.net host - the wildcard covers them. Never point hunt.py at an arbitrary internet host."
+}

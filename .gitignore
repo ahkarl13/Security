@@ -56,3 +56,24 @@ sheepdog/data/_peek.py
 training/launch_*.sh
 # PRIVATE offensive hat - scope-gated, never publish (offensive weights/tooling stay local)
 sheepdog/agent/private/
+
+# session scratch / logs / eval outputs / generated (not deliverables)
+sheepdog/**/*.log
+sheepdog/**/*.err
+sheepdog/**/_*.jsonl
+sheepdog/**/_*.py
+sheepdog/agent/report.md
+sheepdog/training/diversity_sft.jsonl
+sheepdog/training/eval27_out.*
+sheepdog/training/eval27.*
+sheepdog/training/evalref27.*
+# IP-bearing runtime launchers (keep local; they set OLLAMA_HOST to the homelab)
+sheepdog/agent/run_*.ps1
+# top-level Pop orchestration scripts (host/paths/creds, not deliverables)
+training/serve_*.sh
+training/rebalance_*.py
+training/build_dpo_v3.py
+training/export_morefixes.py
+training/_*.py
+training/_*.txt
+pushH.log

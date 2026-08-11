@@ -1,0 +1,14 @@
+[
+  {"title": "SQL Injection in get_user", "location": "app/db.py:get_user (line 10)",
+   "class": "CWE-89 / OWASP A03", "severity": "High",
+   "detail": "User-controlled username concatenated into a SQL query.",
+   "evidence": "input O'Brien'; DROP TABLE users;-- alters the query"},
+  {"title": "OS Command Injection in ping", "location": "app/net.py:ping (line 15)",
+   "class": "CWE-78 / OWASP A03", "severity": "High",
+   "detail": "User host passed to a shell with shell=True.",
+   "evidence": "host 'x; rm -rf /' executes an extra command"},
+  {"title": "Hardcoded API key", "location": "app/config.py (line 5)",
+   "class": "CWE-259 / OWASP A07", "severity": "High",
+   "detail": "Live API key embedded in source.",
+   "evidence": "API_KEY = 'sk-live-...' in the repo"}
+]
