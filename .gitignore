@@ -43,3 +43,14 @@ jailbreak-lab/run_mt_fatten.ps1
 jailbreak-lab/mt-sweep-run.txt
 # raw Tee run-log for the language sweep (clean findings are in lang-results.txt)
 lang-jailbreak/lang-run.txt
+
+# Sheepdog derived/large artifacts (reproducible from ingest scripts)
+sheepdog/rag/index.npz
+sheepdog/rag/items.jsonl
+sheepdog/data/llmsec/*.jsonl
+sheepdog/data/sft_fattened_train.jsonl
+sheepdog/**/__pycache__/
+sheepdog/data/_scan_families.py
+sheepdog/data/_peek.py
+# ephemeral eval driver (hardcodes a run-specific Pop PID)
+training/launch_v2.sh

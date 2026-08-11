@@ -84,7 +84,7 @@ Two findings, and they cut opposite ways:
 Across four evals the pattern is consistent:
 
 1. **SFT teaches behavior, in its domain** — dramatically (2.5% → 100%).
-2. **SFT narrows knowledge out-of-domain** — it got *worse* on everything it wasn't trained on.
+2. **SFT narrows knowledge out-of-domain** — it got *worse* on everything it wasn't trained on. *(But this is fixable, not inherent — see Follow-up 2: 88 grounded-synthetic cross-domain pairs recovered it fully, at no in-domain cost.)*
 3. **RAG supplies knowledge — bounded by KB coverage** — big lift where the KB covers the topic, little where it doesn't.
 4. **SFT + RAG is the best deployable config**, and **safety is preserved** with defensive framing.
 5. **Retrieval closes the size gap — but only when it's relevant.** 8B+RAG ≈ raw 27B on covered topics; on *uncovered* topics the raw 27B wins and off-topic RAG actively *hurts* it. RAG's value is entirely contingent on retrieval relevance — which is really an argument for **investing in KB coverage and retrieval quality over raw model size**.
@@ -100,6 +100,24 @@ The real-CVE result said RAG barely helped because the KB didn't cover memory-sa
 
 Both arms moved in the predicted direction from just 12 broad items — the lever is real, and a *fuller* CWE reference (not only the Top-25 memory-safety classes) is the next increment. This is the concrete input to writeup #19.
 
+## Follow-up 2: is the out-of-domain narrowing inherent? (No.)
+
+Finding #2 — SFT got *worse* on untrained topics (0.80 → 0.70 cross-domain, 0.625 → 0.575 real-CVE) — is the textbook "narrow fine-tune" cost. But is it *inherent* to teaching behavior, or just an artifact of training on a single domain? I tested the obvious fix: add a small dose of **grounded-synthetic** cross-domain data — 88 pairs where a synthetic scenario (app-layer, memory-safety, general CWE) is paired with an answer **assembled from the KB item's own fields**, not model-hallucinated. Retrained the same LoRA on 1,239 pairs (1,151 original + 88 synthetic) → SFT-v2, and re-ran the arms on the full 206-item KB:
+
+| Arm | SFT-v1 | SFT-v2 |
+|---|---|---|
+| In-domain category / format | 1.0 / 1.0 | 1.0 / 1.0 |
+| Cross-domain (no-RAG) | 0.70 | **0.85** |
+| Cross-domain + RAG | 0.95 | 0.95 |
+| Real-CVE (no-RAG) | 0.575 | **0.65** |
+| Real-CVE + RAG | 0.60 | 0.60 |
+
+The narrowing was **not inherent**. 88 grounded-synthetic pairs recovered it — SFT-v2 no-RAG rose to **0.85** cross-domain (now *above* the 0.80 base) and **0.65** on real CVEs (matching base+RAG, above the 0.625 base), while in-domain behavior stayed pinned at 1.0/1.0. This refines finding #2: **narrow fine-tuning narrows knowledge only if you let the data stay narrow** — a small, *grounded* cross-domain supplement buys back the generalization at no in-domain cost. "Grounded" is load-bearing: the synthetic answers are built from real KB fields, so the fatten teaches analyst *format* on new domains without injecting hallucinated facts.
+
+## Follow-up 3: DPO — a negative result worth keeping
+
+I also tried **DPO** to sharpen category selection: 1,151 preference pairs where the *chosen* response names the correct OWASP/CWE category and the *rejected* one swaps in a plausible-but-wrong category, trained 150 steps on top of the SFT adapter. It **regressed** in-domain — exact-category accuracy fell **1.0 → 0.70** (format held at 1.0). The swap-generated rejects apparently produced too easy a gradient and pulled the model off the crisp category token SFT had already taught it. SFT-v2 remains the stronger analyst. I'm keeping this in the writeup because a clean negative result is data: the category-swap DPO recipe *as configured* is worse than the SFT it started from, and needs a rethink (harder-mined rejects, fewer steps, β tuning) before it earns a place in the stack.
+
 ## Honest caveats
 
 - Modest N (12–40 per eval); directional, not a leaderboard claim.
@@ -109,4 +127,4 @@ Both arms moved in the predicted direction from just 12 broad items — the leve
 
 ## Reproduce
 
-`training/`: `train_sheepdog_sft.py` (SFT), `eval_sheepdog.py` (in-domain), `eval_crossdomain.py` (4-arm cross-domain), `eval_realcve.py` (CTIBench, retrieve→gen decoupled), `eval_safety.py`, `eval_27b.py` (size arm). Data foundry + 145-item KB in `sheepdog/data/` and `sheepdog/rag/`.
+`training/`: `train_sheepdog_sft.py` (SFT), `enrich_synth.py` (grounded-synthetic fatten → SFT-v2), `build_dpo.py` + `train_dpo.py` (the DPO arm), `eval_sheepdog.py` (in-domain), `eval_crossdomain.py` (4-arm cross-domain), `eval_realcve.py` (CTIBench, retrieve→gen decoupled), `eval_safety.py`, `eval_27b.py` (size arm). Data foundry + the 206-item KB (LLM-security + application-layer + memory-safety + a 49-class CWE reference + frameworks + pentest) in `sheepdog/data/` and `sheepdog/rag/`.
