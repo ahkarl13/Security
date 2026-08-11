@@ -116,7 +116,21 @@ The narrowing was **not inherent**. 88 grounded-synthetic pairs recovered it —
 
 ## Follow-up 3: DPO — a negative result worth keeping
 
-I also tried **DPO** to sharpen category selection: 1,151 preference pairs where the *chosen* response names the correct OWASP/CWE category and the *rejected* one swaps in a plausible-but-wrong category, trained 150 steps on top of the SFT adapter. It **regressed** in-domain — exact-category accuracy fell **1.0 → 0.70** (format held at 1.0). The swap-generated rejects apparently produced too easy a gradient and pulled the model off the crisp category token SFT had already taught it. SFT-v2 remains the stronger analyst. I'm keeping this in the writeup because a clean negative result is data: the category-swap DPO recipe *as configured* is worse than the SFT it started from, and needs a rethink (harder-mined rejects, fewer steps, β tuning) before it earns a place in the stack.
+I also tried **DPO** to sharpen category selection: 1,151 preference pairs where the *chosen* response names the correct OWASP/CWE category and the *rejected* one swaps in a plausible-but-wrong category, trained 150 steps on top of the SFT adapter. It **regressed** in-domain — exact-category accuracy fell **1.0 → 0.70** (format held at 1.0). The swap-generated rejects apparently produced too easy a gradient and pulled the model off the crisp category token SFT had already taught it. SFT-v2 remains the stronger analyst. I'm keeping this in the writeup because a clean negative result is data — and (Follow-up 4) it turned out to have a specific, fixable cause.
+
+## Follow-up 4: the DPO negative, diagnosed and fixed
+
+The regression had a precise cause, and it's the instructive part. The SFT corpus has only **two** gold classes — LLM01 (prompt injection, 911 examples) and LLM07 (system-prompt leakage, 240). The v1 reject-miner set the "wrong" category for an LLM07 example to **LLM01** — so the 240 LLM07 pairs trained the model to *disprefer LLM01*, which is the correct answer 79% of the time. DPO faithfully learned to avoid the majority class. The 1.0 → 0.70 drop wasn't DPO failing; it was a **reject-mining bug net-suppressing the dominant label**.
+
+The fix (`build_dpo_v2.py`): never demote a real gold label, and balance the cross-class signal. 480 **balanced** hard pairs (all 240 LLM07 → reject-LLM01, plus 240 sampled LLM01 → reject-LLM07, so the cross-class demotion nets to zero) teach the LLM01↔LLM07 boundary without suppressing either class; the remaining 671 LLM01 examples get rejects drawn only from OWASP-LLM ids that **never appear as gold** here. Retrained on the SFT-v2 adapter (80 steps):
+
+| | in-domain category_acc | format |
+|---|---|---|
+| SFT-v2 | 1.0 | 1.0 |
+| DPO v1 (random-swap rejects) | 0.70 | 1.0 |
+| DPO v2 (balanced, non-poisoning rejects) | **1.0** | 1.0 |
+
+DPO v2 holds the ceiling — the regression is gone. The lesson generalizes past DPO: **on a skewed label set, preference rejects must be balanced, or you train the model to avoid its most common correct answer.**
 
 ## Honest caveats
 
@@ -127,4 +141,4 @@ I also tried **DPO** to sharpen category selection: 1,151 preference pairs where
 
 ## Reproduce
 
-`training/`: `train_sheepdog_sft.py` (SFT), `enrich_synth.py` (grounded-synthetic fatten → SFT-v2), `build_dpo.py` + `train_dpo.py` (the DPO arm), `eval_sheepdog.py` (in-domain), `eval_crossdomain.py` (4-arm cross-domain), `eval_realcve.py` (CTIBench, retrieve→gen decoupled), `eval_safety.py`, `eval_27b.py` (size arm). Data foundry + the 206-item KB (LLM-security + application-layer + memory-safety + a 49-class CWE reference + frameworks + pentest) in `sheepdog/data/` and `sheepdog/rag/`.
+`training/`: `train_sheepdog_sft.py` (SFT), `enrich_synth.py` (grounded-synthetic fatten → SFT-v2), `build_dpo.py` + `build_dpo_v2.py` (balanced-reject rework) + `train_dpo.py` (the DPO arm), `eval_sheepdog.py` (in-domain), `eval_crossdomain.py` (4-arm cross-domain), `eval_realcve.py` (CTIBench, retrieve→gen decoupled), `eval_safety.py`, `eval_27b.py` (size arm). Data foundry + the 206-item KB (LLM-security + application-layer + memory-safety + a 49-class CWE reference + frameworks + pentest) in `sheepdog/data/` and `sheepdog/rag/`.

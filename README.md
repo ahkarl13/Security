@@ -5,11 +5,13 @@ vulnerable LLM apps, break them, and fix them — mapped to the OWASP LLM Top 10
 Each writeup ships with a reproducible lab (vulnerable + hardened builds) and a
 before/after that proves the fix.
 
-**17 writeups**, progressing from single-model chat attacks (indirect injection,
+**19 writeups**, progressing from single-model chat attacks (indirect injection,
 output-side exfil, jailbreaks, quantization and sampling effects) into **tool-using
-agents** (AgentDojo injection, defense bake-offs, MCP tool-poisoning) and **red-team
+agents** (AgentDojo injection, defense bake-offs, MCP tool-poisoning), **red-team
 automation** (training a reliable local judge + attacker from my own lab logs, and
-measuring how cheap it is to strip a guard with fine-tuning). Everything runs on
+measuring how cheap it is to strip a guard with fine-tuning), and finally **building a
+local security AI** — measuring fine-tune vs RAG on one commodity stack (#18) and standing
+up a knowledge-grounded application-layer code-review agent (#19). Everything runs on
 self-hosted local models on a 2×3090 homelab; every "secret" is a demo canary.
 
 ## Writeup 01 — Indirect Prompt Injection → Data Exfiltration in a RAG assistant
@@ -219,6 +221,29 @@ no harmful content is produced or trained on — what's measured is the *mechani
 robust a refusal is to LoRA fine-tuning. A handful of benign examples override a standing
 guard in seconds, generalizing to Qi et al. (2023), who showed ~10 examples break genuine
 safety training. Lab: `training/`.
+
+## Writeup 18 — Fine-tune vs RAG for a local security AI: an honest four-eval head-to-head
+
+**[→ writeup-18-finetune-vs-rag.md](writeup-18-finetune-vs-rag.md)** · security-AI · fine-tuning · RAG
+
+Builds "Sheepdog" — a local security-analyst assistant — two ways (fine-tuning an 8B vs
+retrieval over a curated KB) and measures both across four evals: in-domain behavior,
+cross-domain knowledge, an external real-CVE benchmark, and a safety regression. The clean
+result: **fine-tuning owns behavior in-domain** (2.5%→100%), **RAG owns knowledge where the
+KB has coverage**, **SFT+RAG is the best deployable config**, and **safety holds**. Follow-ups
+show the out-of-domain narrowing is *fixable* with grounded-synthetic data, and a DPO
+negative result diagnosed (a reject-mining bug on a skewed label set) and fixed. Code + KB + eval harnesses in `sheepdog/` and `training/`.
+
+## Writeup 19 — An application-layer security-review agent
+
+**[→ writeup-19-appsec-review-agent.md](writeup-19-appsec-review-agent.md)** · appsec · CWE/OWASP · code review
+
+Most vulnerabilities originate at the application layer, so Sheepdog's defensive hat is a
+**grounded code-review agent**: a reasoning model + retrieval over a curated 206-item KB
+(OWASP Top 10:2025, the 2025 CWE Top 25, memory-safety CWEs, a 49-class CWE reference,
+frameworks + pentest methodology). On a planted-vuln sample the 27B+RAG caught **all six**
+issues with correct CWE ids and real fixes; on real CVEs (CTIBench) relevant retrieval lifts
+a security-pretrained base. Reviewer: `sheepdog/agent/review.py`.
 
 ## Running the labs
 
