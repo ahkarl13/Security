@@ -54,3 +54,5 @@ sheepdog/data/_scan_families.py
 sheepdog/data/_peek.py
 # ephemeral eval driver (hardcodes a run-specific Pop PID)
 training/launch_v2.sh
+# PRIVATE offensive hat - scope-gated, never publish (offensive weights/tooling stay local)
+sheepdog/agent/private/
