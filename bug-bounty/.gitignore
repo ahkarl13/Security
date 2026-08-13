@@ -1,0 +1,5 @@
+# Keep live/unsubmitted findings and machine-specific artifacts OUT of the public repo.
+codex-poc/
+openai-safety-bb-submission-codex-loopback.md
+*.log
+run*.txt
