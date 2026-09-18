@@ -90,13 +90,58 @@ given hostile metadata. The real controls are structural, outside the model:
 - **Tool isolation** — a tool's description must not be able to reference or trigger
   other tools (kills cross-tool orchestration).
 
-## Limits / next
-6 vectors, 3 models, 6 reps, one canary. Next: finish the 27B row, add a real FastMCP
-server for protocol fidelity, test the structural defenses (namespacing, param
-sanitization) as measured mitigations, and add more models across the capability range
-to trace the shadowing-vs-directive susceptibility crossover.
+## Defenses, measured (`training/mcp_tripwire.py`)
+Because those controls are structural — outside the model — they can be built and scored
+*without* a model. `mcp_tripwire.py` implements two of them against the same six vectors,
+reading only the `tools/list` metadata (no model, no GPU):
 
-## Reproduce
+- **Tripwire (integrity).** Canonical SHA-256 over each tool's `{name, description,
+  parameters}`, pinned at approval; re-fetched and diffed on every reconnect. Any drift →
+  alarm + block. `check --fail-on-drift` exits non-zero, so it drops into a pre-flight/CI
+  gate.
+- **Scanner (content).** Static read of the metadata itself: directive/injection phrasing,
+  parameters that ask for the system prompt or secrets, one tool naming another
+  (orchestration), trust-assertion shadowing + name-collision, and base64/hex payloads
+  (decoded and re-scanned).
+
+The delivery model decides which control can even fire:
+
+| vector | delivered as an update → **tripwire** | hostile day-one → **scanner** |
+|---|---|---|
+| V1 description-injection | ✓ drift | ✓ directive |
+| V2 suggestive-param exfil | ✓ drift (param added) | ✓ param-exfil |
+| V3 rug-pull | ✓ drift | ✓ directive |
+| V4 tool shadowing | ✓ drift (tool added) | ✓ shadowing + name-collision |
+| V5 cross-tool orchestration | ✓ drift | ✓ cross-tool |
+| V6 base64 payload | ✓ drift | ✓ obfuscation (decoded) |
+
+The split is the whole point. If the poison **arrives as a change** — a benign tool that
+turns hostile, a rug-pull, a silently-added shadow — the tripwire catches it whether or
+not it looks malicious, so it also catches novel poison the scanner has never seen. If the
+server is **hostile from the first handshake**, `pin == poison`, drift is silent, and only
+the content scanner has anything to catch. Neither control alone covers both columns;
+together they do. Both are metadata-only: they do nothing about a tool that is honestly
+described and maliciously *implemented* — that needs runtime output controls (the
+canary-redaction lesson from #2/#9).
+
+Reproduce:
+```
+python training/mcp_tripwire.py demo
+# or against a real server's captured tools/list:
+python training/mcp_tripwire.py pin   --tools-json tools.json --pin .toolpin.json
+python training/mcp_tripwire.py check --tools-json tools.json --pin .toolpin.json --fail-on-drift
+python training/mcp_tripwire.py scan  --tools-json tools.json
+```
+
+## Limits / next
+6 vectors, 3 models, 6 reps, one canary. The two structural defenses above now *detect*
+every vector across the two delivery models; still open: quantify the scanner's
+false-positive rate on a corpus of benign real-world MCP servers, promote detection to
+*enforcement* (block-on-drift / quarantine), finish the 27B row, add a real FastMCP server
+for protocol fidelity, and add more models across the capability range to trace the
+shadowing-vs-directive susceptibility crossover.
+
+## Reproduce (attack)
 ```
 LOCAL_LLM_PORT=11434 python training/mcp_poison.py \
   --models llama3.1:8b guarded-8b-q4 guarded-qwen36 --reps 6
